@@ -23,14 +23,17 @@ class Maze:
     goal=0
     size=0
 
-    def __init__(self, start=(1,1), goal=(6,6), size=(8,8), end=100, seed=0):
+    def __init__(self, start=0, goal=0, size=(8,8), end=100, seed=0):
 
         random.seed(seed)
 
         self.start=start
         self.goal=goal
-        self.state[0]=start[0]
-        self.state[1]=start[1]
+        if start==0: self.start=(1,1)
+        if goal==0: self.goal=(size[0]-2,size[1]-2)
+
+        self.state[0]=self.start[0]
+        self.state[1]=self.start[1]
         self.size=size
 
         for _ in range(100000):
@@ -43,6 +46,7 @@ class Maze:
         self.state[0]=self.start[0]
         self.state[1]=self.start[1]
         self.n=0
+        return 0, self.state, False
 
     def step(self, action):
         """

@@ -21,7 +21,7 @@ if __name__ == "__main__":
     random.seed()
 
     total_epoch=10000
-    alpha = 0.01
+    alpha = 0.1
     gamma=0.99
 
     rewards =[]

@@ -15,13 +15,14 @@ def greedy(Q, state,):
 
 if __name__ == "__main__":
     size=(14,14)
+    size=(20,20)
     Q = np.zeros( (size[0], size[1], 4) )
 
     env = maze.Maze(size=size)
     random.seed()
 
-    total_epoch=1000
-    alpha = 0.01
+    total_epoch=10000
+    #alpha = 0.01
     gamma=0.99
 
     rewards =[]
@@ -29,7 +30,9 @@ if __name__ == "__main__":
     for epoch in range(total_epoch):
 
         #epsilon= (1-epoch/total_epoch)**5
-        epsilon = 0.2
+        #alpha = 1/(epoch+1)
+        alpha = 0.1
+        epsilon = 0.1
 
 #------------- Try out -----------------------------
         r, state, end = copy.deepcopy(env.reset())
@@ -50,7 +53,8 @@ if __name__ == "__main__":
             a=trajectory[1+i*4]
             r=trajectory[2+i*4]
             end=trajectory[3+i*4]
-            estimate = sum([r*gamma**n for n,r, in enumerate([ trajectory[j] for j in np.arange(2+i*4,len(trajectory), 4)])])
+            s_ = trajectory[4+i*4]
+            estimate = r + gamma*Q[s_[0]][s_[1]][greedy(Q, s_)]
             Q[s[0]][s[1]][a] = Q[s[0]][s[1]][a] + alpha*(estimate - Q[s[0]][s[1]][a])
             if end:break
         rewards.append(sum([gamma**n*r for n,r, in enumerate([ trajectory[j] for j in np.arange(2, len(trajectory), 4)])]))

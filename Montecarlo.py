@@ -18,10 +18,10 @@ if __name__ == "__main__":
     Q = np.zeros( (size[0], size[1], 4) )
 
     env = maze.Maze(size=size)
-    random.seed()
+    #random.seed()
 
     total_epoch=1000
-    alpha = 0.01
+    alpha = 0.1
     gamma=0.99
 
     rewards =[]

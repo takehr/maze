@@ -18,14 +18,13 @@ if __name__ == "__main__":
     size=(20,20)
     Q = np.zeros( (size[0], size[1], 4) )
 
-    env = maze.Maze(size=size, seed=random.randint(0,1000))
-    random.seed()
+    env = maze.Maze(size=size, seed=8093)
 
-    total_epoch=3000
+    total_epoch=10000
     #alpha = 0.01
     gamma=0.99
 
-    rewards =[]
+    revenue = []
 
     for epoch in range(total_epoch):
 
@@ -33,37 +32,27 @@ if __name__ == "__main__":
         #alpha = 1/(epoch+1)
         alpha = 0.1
         epsilon = 0.1
+        rewards=[]
 
 #------------- Try out -----------------------------
         r, state, end = copy.deepcopy(env.reset())
-        trajectory = []
-        trajectory.append(state)
+        rewards.append(r)
+        
         for _ in range(100000):
             action = copy.deepcopy(epsilonGreedy(Q, state, epsilon)[0])
-            r, state, end = copy.deepcopy(env.step(action))
-            trajectory.append(action)
-            trajectory.append(r)
-            trajectory.append(end)
-            trajectory.append(state)
-            if end: break
-
+            r, state_, end = copy.deepcopy(env.step(action))
+            rewards.append(r)
 #------------- Update Q Table -----------------------
-        for i in range(10000000):
-            s=trajectory[i*4]
-            a=trajectory[1+i*4]
-            r=trajectory[2+i*4]
-            end=trajectory[3+i*4]
-            s_ = trajectory[4+i*4]
-            estimate = r + gamma*Q[s_[0]][s_[1]][greedy(Q, s_)]
-            Q[s[0]][s[1]][a] = Q[s[0]][s[1]][a] + alpha*(estimate - Q[s[0]][s[1]][a])
-            if end:break
-        rewards.append(sum([gamma**n*r for n,r, in enumerate([ trajectory[j] for j in np.arange(2, len(trajectory), 4)])]))
+            estimate = r + gamma*Q[state_[0]][state_[1]][greedy(Q, state_)]
+            Q[state[0]][state[1]][action] = Q[state[0]][state[1]][action] + alpha*(estimate - Q[state[0]][state[1]][action])
+            state=state_
+            if end: break
+        revenue.append(sum([gamma**n*r for n,r, in enumerate(rewards)]))
 
     pprint(env.world)
     pprint(list(np.sum(np.array(Q),axis=2)))
     plt.imshow(np.sum(np.array(Q),axis=2))
     plt.colorbar()
     plt.figure()
-    plt.plot(rewards)
+    plt.plot(revenue)
     plt.show()
-    # Experience Replay = banishing Time correlation and revisit rare state
